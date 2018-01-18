@@ -7,7 +7,7 @@ This unit may be compiled either for Windows or OSX.
 There are already several better Windows implementations (WinGraph or standard FPC Graph)
 so this unit is intended to be used primarily with OSX.
 
-This implementation uses GLFW (OpenGL) as the base.
+This implementation uses GLFW (http://www.glfw.org/ - OpenGL library) as the base.
 
 Pascal bindings for GLFW was taken from https://github.com/neslib/DelphiGlfw
 Neslib.Glfw3.pas is used.
