@@ -314,6 +314,135 @@ const UpdateOff = word(0);
 	YellowGreen = $32CD9A;
 	Zinnwaldite = $AFC2EB;
 
+{key constants}
+const
+  { Printable keys }
+  GLFW_KEY_SPACE = 32;
+  GLFW_KEY_APOSTROPHE = 39;
+  GLFW_KEY_COMMA = 44;
+  GLFW_KEY_MINUS = 45;
+  GLFW_KEY_PERIOD = 46;
+  GLFW_KEY_SLASH = 47;
+  GLFW_KEY_0 = 48;
+  GLFW_KEY_1 = 49;
+  GLFW_KEY_2 = 50;
+  GLFW_KEY_3 = 51;
+  GLFW_KEY_4 = 52;
+  GLFW_KEY_5 = 53;
+  GLFW_KEY_6 = 54;
+  GLFW_KEY_7 = 55;
+  GLFW_KEY_8 = 56;
+  GLFW_KEY_9 = 57;
+  GLFW_KEY_SEMICOLON = 59;
+  GLFW_KEY_EQUAL = 61;
+  GLFW_KEY_A = 65;
+  GLFW_KEY_B = 66;
+  GLFW_KEY_C = 67;
+  GLFW_KEY_D = 68;
+  GLFW_KEY_E = 69;
+  GLFW_KEY_F = 70;
+  GLFW_KEY_G = 71;
+  GLFW_KEY_H = 72;
+  GLFW_KEY_I = 73;
+  GLFW_KEY_J = 74;
+  GLFW_KEY_K = 75;
+  GLFW_KEY_L = 76;
+  GLFW_KEY_M = 77;
+  GLFW_KEY_N = 78;
+  GLFW_KEY_O = 79;
+  GLFW_KEY_P = 80;
+  GLFW_KEY_Q = 81;
+  GLFW_KEY_R = 82;
+  GLFW_KEY_S = 83;
+  GLFW_KEY_T = 84;
+  GLFW_KEY_U = 85;
+  GLFW_KEY_V = 86;
+  GLFW_KEY_W = 87;
+  GLFW_KEY_X = 88;
+  GLFW_KEY_Y = 89;
+  GLFW_KEY_Z = 90;
+  GLFW_KEY_LEFT_BRACKET = 91;
+  GLFW_KEY_BACKSLASH = 92;
+  GLFW_KEY_RIGHT_BRACKET = 93;
+  GLFW_KEY_GRAVE_ACCENT = 96;
+  GLFW_KEY_WORLD_1 = 161;
+  GLFW_KEY_WORLD_2 = 162;
+
+const
+  { Function keys }
+  GLFW_KEY_ESCAPE = 256;
+  GLFW_KEY_ENTER = 257;
+  GLFW_KEY_TAB = 258;
+  GLFW_KEY_BACKSPACE = 259;
+  GLFW_KEY_INSERT = 260;
+  GLFW_KEY_DELETE = 261;
+  GLFW_KEY_RIGHT = 262;
+  GLFW_KEY_LEFT = 263;
+  GLFW_KEY_DOWN = 264;
+  GLFW_KEY_UP = 265;
+  GLFW_KEY_PAGE_UP = 266;
+  GLFW_KEY_PAGE_DOWN = 267;
+  GLFW_KEY_HOME = 268;
+  GLFW_KEY_END = 269;
+  GLFW_KEY_CAPS_LOCK = 280;
+  GLFW_KEY_SCROLL_LOCK = 281;
+  GLFW_KEY_NUM_LOCK = 282;
+  GLFW_KEY_PRINT_SCREEN = 283;
+  GLFW_KEY_PAUSE = 284;
+  GLFW_KEY_F1 = 290;
+  GLFW_KEY_F2 = 291;
+  GLFW_KEY_F3 = 292;
+  GLFW_KEY_F4 = 293;
+  GLFW_KEY_F5 = 294;
+  GLFW_KEY_F6 = 295;
+  GLFW_KEY_F7 = 296;
+  GLFW_KEY_F8 = 297;
+  GLFW_KEY_F9 = 298;
+  GLFW_KEY_F10 = 299;
+  GLFW_KEY_F11 = 300;
+  GLFW_KEY_F12 = 301;
+  GLFW_KEY_F13 = 302;
+  GLFW_KEY_F14 = 303;
+  GLFW_KEY_F15 = 304;
+  GLFW_KEY_F16 = 305;
+  GLFW_KEY_F17 = 306;
+  GLFW_KEY_F18 = 307;
+  GLFW_KEY_F19 = 308;
+  GLFW_KEY_F20 = 309;
+  GLFW_KEY_F21 = 310;
+  GLFW_KEY_F22 = 311;
+  GLFW_KEY_F23 = 312;
+  GLFW_KEY_F24 = 313;
+  GLFW_KEY_F25 = 314;
+  GLFW_KEY_KP_0 = 320;
+  GLFW_KEY_KP_1 = 321;
+  GLFW_KEY_KP_2 = 322;
+  GLFW_KEY_KP_3 = 323;
+  GLFW_KEY_KP_4 = 324;
+  GLFW_KEY_KP_5 = 325;
+  GLFW_KEY_KP_6 = 326;
+  GLFW_KEY_KP_7 = 327;
+  GLFW_KEY_KP_8 = 328;
+  GLFW_KEY_KP_9 = 329;
+  GLFW_KEY_KP_DECIMAL = 330;
+  GLFW_KEY_KP_DIVIDE = 331;
+  GLFW_KEY_KP_MULTIPLY = 332;
+  GLFW_KEY_KP_SUBTRACT = 333;
+  GLFW_KEY_KP_ADD = 334;
+  GLFW_KEY_KP_ENTER = 335;
+  GLFW_KEY_KP_EQUAL = 336;
+  GLFW_KEY_LEFT_SHIFT = 340;
+  GLFW_KEY_LEFT_CONTROL = 341;
+  GLFW_KEY_LEFT_ALT = 342;
+  GLFW_KEY_LEFT_SUPER = 343;
+  GLFW_KEY_RIGHT_SHIFT = 344;
+  GLFW_KEY_RIGHT_CONTROL = 345;
+  GLFW_KEY_RIGHT_ALT = 346;
+  GLFW_KEY_RIGHT_SUPER = 347;
+  GLFW_KEY_MENU = 348;
+
+  GLFW_KEY_LAST = GLFW_KEY_MENU;
+
 
 {initialization exported routines}
 procedure ClearDevice;
@@ -338,6 +467,7 @@ procedure InitGraph(var driver,mode:smallint; const title:shortstring);
 procedure UpdateGraph(bit:word);
 
 {crt overrides}
+function KeyPressed: boolean;
 function ReadKey: char;
 procedure Delay(ms: longint);
 
@@ -459,7 +589,9 @@ implementation
 
 uses gl,
 	Neslib.Glfw3,
+	//windows,
 	ctypes, crt, strings;
+
 
 type
 	ColorType = record
@@ -487,17 +619,34 @@ var
 
 	visualPage,activePage       : word;
 
+const KeyBufSize = 32;
+
+var
+	bufRIndex, bufWIndex, bufCurSize : word;
+
+	nr_readkey,nr_inputkey  : longint;
+	keyBuf                  : array[0..KeyBufSize-1] of char;
+
+
+procedure AddKey(c:char); forward;
+procedure AddExtKey(c:char);  forward;
+procedure TranslateKeys(code:cint); forward;
+
 {$CALLING CDECL} 
 
-procedure MyKeyCallback(window: PGLFWwindow; a,b,c,d:cint);
+procedure MyKeyCallback(window: PGLFWwindow; key,scancode,action,mods : cint);
 begin
-	//writeln('key cb: (',a:5,b:5,c:5,d:5,')');
+	writeln('key cb: (',key:5,scancode:5,action:5,mods:5,')');
+	//writeln('key cb:', mods:5, mods and $20:5);
+
+	if (action = GLFW_PRESS) then
+		TranslateKeys(key);
 end;
 
 procedure MyCharCallback(window: PGLFWwindow; a:cuint);
 begin
-	//writeln('char cb: (',a:5,'*',chr(a),'*)');
-	myKey := chr(a);
+	writeln('char cb: (',a:5,'*',chr(a),'*)');
+	AddKey(chr(a));
 end;
 
 procedure MyResizeCallback(window: PGLFWwindow; w,h:cint);
@@ -622,6 +771,10 @@ begin
 	grResult := grOk;
 
 	grEnabled := true;
+
+	bufRIndex := 0;
+	bufWIndex := 0;
+	bufCurSize := 0;
 end;
 
 procedure ClearDevice;
@@ -693,6 +846,146 @@ begin
 	grResult:=grOk;
 end;
 
+procedure AddKeyInternal(c:char);
+begin
+	writeln('AddkeyInternal: ', ord(c));
+	keyBuf[bufWIndex] := c;
+	bufWIndex := (bufWIndex + 1) mod KeyBufSize;
+	inc(bufCurSize);
+end;
+
+procedure AddKey(c:char);
+begin
+	writeln('Addkey: ', ord(c));
+	if (bufCurSize < KeyBufSize) then
+	begin
+		AddKeyInternal(c);
+	end;
+end;
+
+procedure AddExtKey(c:char);
+begin
+	if ((bufCurSize+1) < KeyBufSize) then
+	begin
+		AddKeyInternal(#0);
+		AddKeyInternal(c);
+	end;
+end;
+
+procedure TranslateKeys(code:cint);
+var
+	shift_key,ctrl_key,alt_key: boolean;
+	num_lock: boolean;
+begin
+	shift_key := (glfwGetKey(graphWindow, GLFW_KEY_LEFT_SHIFT) <> GLFW_RELEASE) or (glfwGetKey(graphWindow, GLFW_KEY_RIGHT_SHIFT) <> GLFW_RELEASE);
+	ctrl_key := (glfwGetKey(graphWindow, GLFW_KEY_LEFT_CONTROL) <> GLFW_RELEASE) or (glfwGetKey(graphWindow, GLFW_KEY_RIGHT_CONTROL) <> GLFW_RELEASE);
+	alt_key := (glfwGetKey(graphWindow, GLFW_KEY_LEFT_ALT) <> GLFW_RELEASE) or (glfwGetKey(graphWindow, GLFW_KEY_RIGHT_ALT) <> GLFW_RELEASE);
+
+
+	writeln('TranslateKeys: (',code:5,shift_key:6,ctrl_key:6,alt_key:6,')');
+
+	case code of
+	GLFW_KEY_SPACE : if alt_key then AddExtKey(#11);
+	GLFW_KEY_TAB: if ctrl_key then AddKey(#30);
+	GLFW_KEY_ESCAPE: Addkey(#27);
+	//VK_BACK: if alt_key then AddExtKey(#14);
+	//VK_RETURN: if alt_key then AddExtKey(#166);
+	//VK_APPS: AddExtKey(#151);
+	GLFW_KEY_INSERT: if ctrl_key then AddExtKey(#146) else
+	           if alt_key then AddExtKey(#162) else AddExtKey(#82);
+	GLFW_KEY_DELETE: if ctrl_key then AddExtKey(#147) else
+	           if alt_key then AddExtKey(#163) else AddExtKey(#83);
+	GLFW_KEY_HOME: if ctrl_key then AddExtKey(#119) else
+	         if alt_key then AddExtKey(#164) else AddExtKey(#71);
+	GLFW_KEY_END: if ctrl_key then AddExtKey(#117) else
+	        if alt_key then AddExtKey(#165) else AddExtKey(#79);
+	//VK_NEXT: if ctrl_key then AddExtKey(#118) else
+	//         if alt_key then AddExtKey(#161) else AddExtKey(#81);
+	//VK_PRIOR: if ctrl_key then AddExtKey(#132) else
+	//          if alt_key then AddExtKey(#153) else AddExtKey(#73);
+	GLFW_KEY_UP: if ctrl_key then AddExtKey(#141) else
+	       if alt_key then AddExtKey(#152) else AddExtKey(#72);
+	GLFW_KEY_DOWN: if ctrl_key then AddExtKey(#145) else
+	         if alt_key then AddExtKey(#160) else AddExtKey(#80);
+	GLFW_KEY_LEFT: if ctrl_key then AddExtKey(#115) else
+	         if alt_key then AddExtKey(#155) else AddExtKey(#75);
+	GLFW_KEY_RIGHT: if ctrl_key then AddExtKey(#116) else
+	          if alt_key then AddExtKey(#157) else AddExtKey(#77);
+	GLFW_KEY_F1..GLFW_KEY_F10: if shift_key then AddExtKey(chr(code-GLFW_KEY_F1+84)) else
+	               if ctrl_key then AddExtKey(chr(code-GLFW_KEY_F1+94)) else
+	               if alt_key then AddExtKey(chr(code-GLFW_KEY_F1+104))
+	                          else AddExtKey(chr(code-GLFW_KEY_F1+59));
+	GLFW_KEY_F11,GLFW_KEY_F12: if shift_key then AddExtKey(chr(code+13)) else
+	               if ctrl_key then AddExtKey(chr(code+15)) else
+	               if alt_key then AddExtKey(chr(code+17))
+	                          else AddExtKey(chr(code+11));
+	GLFW_KEY_PAUSE: if alt_key then AddExtKey(#169) else
+	          if not(ctrl_key) then AddExtKey(#12);
+
+	GLFW_KEY_KP_1:; // At this moment GLFW does not distinguish bewtween Keypad Numlock on and off
+	GLFW_KEY_KP_2:; // so handling of these keys are left for char callback
+	GLFW_KEY_KP_3:;
+	GLFW_KEY_KP_4:;
+	GLFW_KEY_KP_5:; //if ctrl_key then AddExtKey(#143) else if alt_key then AddExtKey(#76) else AddExtKey(#76);
+	GLFW_KEY_KP_6:;
+	GLFW_KEY_KP_7:;
+	GLFW_KEY_KP_8:;
+	GLFW_KEY_KP_9:;
+	GLFW_KEY_KP_0:;
+	GLFW_KEY_KP_DECIMAL:
+		if ctrl_key then AddExtKey(#150) else
+		if alt_key then AddExtKey(#114);
+
+	GLFW_KEY_KP_DIVIDE: if ctrl_key then AddExtKey(#148) else
+	           if alt_key then AddExtKey(#69);
+	GLFW_KEY_KP_MULTIPLY: if ctrl_key then AddExtKey(#149) else
+	             if alt_key then AddExtKey(#70);
+	GLFW_KEY_KP_SUBTRACT: if ctrl_key then AddExtKey(#142) else
+	             if alt_key then AddExtKey(#74);
+	GLFW_KEY_KP_ADD: if ctrl_key then AddExtKey(#144) else
+	        if alt_key then AddExtKey(#78);
+	
+	else
+		writeln('TranslateKeys: else');
+		if ctrl_key then case code of
+			ord('0')          : AddExtKey(#10);
+			ord('1')..ord('9'): AddExtKey(chr(code-48));
+		end;
+
+    	if alt_key then case code of
+					ord('A'): AddExtKey(#30);
+					ord('B'): AddExtKey(#48);
+					ord('C'): AddExtKey(#46);
+					ord('D'): AddExtKey(#32);
+					ord('E'): AddExtKey(#18);
+					ord('F'): AddExtKey(#33);
+					ord('G'): AddExtKey(#34);
+					ord('H'): AddExtKey(#35);
+					ord('I'): AddExtKey(#23);
+					ord('J'): AddExtKey(#36);
+					ord('K'): AddExtKey(#37);
+					ord('L'): AddExtKey(#38);
+					ord('M'): AddExtKey(#50);
+					ord('N'): AddExtKey(#49);
+					ord('O'): AddExtKey(#24);
+					ord('P'): AddExtKey(#25);
+					ord('Q'): AddExtKey(#16);
+					ord('R'): AddExtKey(#19);
+					ord('S'): AddExtKey(#31);
+					ord('T'): AddExtKey(#20);
+					ord('U'): AddExtKey(#22);
+					ord('V'): AddExtKey(#47);
+					ord('W'): AddExtKey(#17);
+					ord('X'): AddExtKey(#45);
+					ord('Y'): AddExtKey(#21);
+					ord('Z'): AddExtKey(#44);
+					ord('0'): AddExtKey(#129);
+					ord('1')..ord('9'): AddExtKey(chr(code+71));
+                    end;
+//*)                    
+	end;
+end;
+
 
 function ReadKey: char;
 begin
@@ -702,14 +995,53 @@ begin
 
 	if (grEnabled) then
 	begin
-		while (myKey = #0) and (glfwWindowShouldClose(graphWindow) = 0 ) do
+		while (bufCurSize = 0) and (glfwWindowShouldClose(graphWindow) = 0 ) do
 		begin
 			glfwPollEvents();
 		end;
-		myKey := #0;
+
+		if (glfwWindowShouldClose(graphWindow) <> 0) then
+		begin
+			//THINK: should it be handled directly
+			halt;
+		end;
+
+		Readkey := keyBuf[bufRIndex];
+		bufRIndex := (bufRIndex + 1) mod KeyBufSize;
+		dec(bufCurSize);
 	end
 	else
+	begin
+{$IFDEF DBGOUT}
+		writeln('Readkey(): crt');
+{$ENDIF}
 		Result := crt.readkey();
+	end;
+
+{$IFDEF DBGOUT}
+		writeln('Readkey() returns:', result );
+{$ENDIF}
+end;
+
+function KeyPressed: boolean;
+begin
+
+	if (grEnabled) then
+	begin
+		glfwPollEvents();
+
+		if (glfwWindowShouldClose(graphWindow) <> 0) then
+		begin
+			//THINK: should it be handled directly
+			halt;
+		end;
+
+		KeyPressed := (bufCurSize <> 0);
+	end
+	else
+	begin
+		Result := crt.KeyPressed();
+	end;
 end;
 
 procedure Delay(ms: longint);
@@ -722,6 +1054,12 @@ begin
 
 	if (grEnabled) then
 	begin
+		if (glfwWindowShouldClose(graphWindow) <> 0) then
+		begin
+			//THINK: should it be handled directly
+			halt;
+		end;
+
 		curTime := glfwGetTime;
 		endTime := curTime + ms / 1000;
 

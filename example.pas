@@ -1,7 +1,9 @@
 program example;
 
-uses osxbgi;
-//uses wingraph, wincrt;
+uses
+	//windows,
+	osxbgi;
+	//wingraph, wincrt;
 
 //
 // TESTING app
@@ -17,6 +19,19 @@ var
 
 	polyPoints: array [1..5] of PointType;
 
+	key: Char;
+
+procedure ReadKeyTest();
+begin
+	writeln('Readkey test. Press Esc to exit');
+	key := readkey();
+	while key <> chr(27) do
+	begin
+		writeln(ord(key),' *',key,'*');
+		key := readkey();
+	end;
+end;
+
 begin
 	gd := nopalette;
 	gm := m640x480;
@@ -27,6 +42,11 @@ begin
 		writeln('Cannot init graphics');
 		exit;
 	end;
+
+	//writeln('GLFW_KEY_UP=',GLFW_KEY_UP);
+
+	ReadKeyTest();
+	exit;
 
 	//UpdateGraph(UpdateOff);
 	UpdateGraph(UpdateOn);
@@ -161,6 +181,8 @@ begin
 	readkey;
 	*)
 
+
+
 	tmpcolor := 500;
 	etaloncolor := 500;
 	SetBkColor(tmpcolor);
@@ -176,6 +198,14 @@ begin
 	writeln('get rgb check (50,100,150) ', r:6, g:6, b:6);
 
 	readkey;
+	writeln('REadkey test. Press Shift+R to exit');
+	key := readkey();
+	while key <> 'R' do
+	begin
+		writeln(ord(key),' *',key,'*');
+		key := readkey();
+	end;
+
 
 	CloseGraph();
 

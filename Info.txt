@@ -1,3 +1,5 @@
+You'll need GLFW (http://www.glfw.org/) binaries to be built.
+
 There are also some functions that overrides crt ones: 
 function ReadKey: char;
 procedure Delay(ms: longint);
