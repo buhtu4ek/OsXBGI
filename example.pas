@@ -1,7 +1,6 @@
 program example;
 
 uses
-	//windows,
 	osxbgi;
 	//wingraph, wincrt;
 
@@ -32,7 +31,38 @@ begin
 	end;
 end;
 
+procedure TestText();
 begin
+	//SetColor(white);
+	OutTextXY(10,200, 'the quick brown fox jumps over the lazy dog 1234567890');
+	//OutTextXY(10,200, 's');
+
+	SetColor(yellow);
+	OutTextXY(10,400, 'THE QUICK BROWN FOX JUMPS OVER THE LAZY DOG 1234567890');
+	//OutTextXY(10,400, 'S');
+end;
+
+procedure TestBorders();
+var
+	i: Integer;
+begin
+	for i := 0 to 480 do
+	begin
+		if (i mod 2) = 0 then
+			line(-10, i, 300, i);
+	end;
+
+	SetColor(yellow);
+	Rectangle(0,0,99,99);
+
+	Rectangle(500,-1,640,99);
+
+	Rectangle(500,300,639,480);
+
+	Rectangle(-1,300,99,479);	
+end;
+
+begin 
 	gd := nopalette;
 	gm := m640x480;
 	InitGraph(gd,gm,'Hello World');	
@@ -45,20 +75,27 @@ begin
 
 	//writeln('GLFW_KEY_UP=',GLFW_KEY_UP);
 
-	ReadKeyTest();
-	exit;
-
-	//UpdateGraph(UpdateOff);
-	UpdateGraph(UpdateOn);
-
-	SetBkColor(black);
-	ClearDevice();
+	//ReadKeyTest();
+	//exit;
+	readkey();
+	UpdateGraph(UpdateOff);
+	//UpdateGraph(UpdateOn);
 
 	SetBkColor(red);
-	ClearDevice();
-	//readkey;
+	ClearDevice();	
 
-	SetColor(white);
+	SetBkColor(darkred);
+	ClearDevice();	
+
+	TestText();
+
+	UpdateGraph(UpdateNow);
+	readkey;
+	exit;
+
+
+
+
 	line(10,10,20,20);
 	LineTo(0,50);
 	//readkey;

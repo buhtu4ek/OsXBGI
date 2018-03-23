@@ -31,18 +31,27 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. }
 interface
 
 uses
+{$IFNDEF FPC}
   {$IF Defined(MSWINDOWS)}
-  //Winapi.Windows,
+  Winapi.Windows,
+  {$ELSEIF Defined(MACOS) and not Defined(IOS)}
+  Macapi.CocoaTypes,
+  {$ELSEIF Defined(DARWIN)}  
+  {$ELSE}
+    {$MESSAGE Error 'Unsupported platform'}
+  {$ENDIF}
+  System.SysUtils;
+{$ELSE}
+  {$IF Defined(MSWINDOWS)}
   Windows,
   {$ELSEIF Defined(MACOS) and not Defined(IOS)}
   Macapi.CocoaTypes,
   {$ELSEIF Defined(DARWIN)}
-  //
   {$ELSE}
     {$MESSAGE Error 'Unsupported platform'}
   {$ENDIF}
-  //System.SysUtils;
   SysUtils;
+{$ENDIF}
 
 const
   {$IF Defined(WIN32)}
@@ -65,7 +74,9 @@ const
   GLFW3_LIB = 'libglfw.3.2.dylib';
   { @exclude }
   _PU = '';
-  {$linklib libglfw.3.2.dylib}  
+  {$IFDEF FPC}
+    {$LINKLIB libglfw.3.2.dylib }
+  {$ENDIF}
   {$ELSE}
     {$MESSAGE Error 'Unsupported platform'}
   {$ENDIF}
@@ -1449,9 +1460,6 @@ procedure glfwWindowHint(hint: Integer; value: Integer);
   Added in version 3.0.  Replaces <tt>glfwOpenWindow</tt>. }
 function glfwCreateWindow(width: Integer; height: Integer; const title: PAnsiChar; monitor: PGLFWmonitor; share: PGLFWwindow): PGLFWwindow;
   cdecl external GLFW3_LIB name _PU + 'glfwCreateWindow';
-
-//function glfwCreateWindow(width: Integer; height: Integer; const title: PAnsiChar; monitor: PGLFWmonitor; share: PGLFWwindow): PGLFWwindow;
-//  cdecl external GLFW3_LIB name 'glfwCreateWindow';
 
 { Destroys the specified window and its context.
 

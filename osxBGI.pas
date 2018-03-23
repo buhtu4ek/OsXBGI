@@ -4,8 +4,6 @@ unit osxbgi;
 
 interface
 
-//uses Neslib.Glfw3;
-
 {$DEFINE DBGOUT}
 const
 	defaultTitle: pchar = 'Graphic window'#0;
@@ -490,6 +488,10 @@ procedure SetColor(color:longword);
 procedure SetPalette(nrcolor,color:word);
 procedure SetRGBPalette(nrcolor,r,g,b:word);
 
+// Text routines
+procedure OutText(const textstring:shortstring);
+procedure OutTextXY(x,y:smallint; const textstring:shortstring);
+
 
 type
 	        PointType = record
@@ -590,7 +592,7 @@ implementation
 uses gl,
 	Neslib.Glfw3,
 	//windows,
-	ctypes, crt, strings;
+	ctypes, crt, strings, math;
 
 
 type
@@ -636,8 +638,10 @@ procedure TranslateKeys(code:cint); forward;
 
 procedure MyKeyCallback(window: PGLFWwindow; key,scancode,action,mods : cint);
 begin
+{$IFDEF DBGOUT}	
 	writeln('key cb: (',key:5,scancode:5,action:5,mods:5,')');
 	//writeln('key cb:', mods:5, mods and $20:5);
+{$ENDIF}
 
 	if (action = GLFW_PRESS) then
 		TranslateKeys(key);
@@ -645,7 +649,9 @@ end;
 
 procedure MyCharCallback(window: PGLFWwindow; a:cuint);
 begin
+{$IFDEF DBGOUT}	
 	writeln('char cb: (',a:5,'*',chr(a),'*)');
+{$ENDIF}	
 	AddKey(chr(a));
 end;
 
@@ -656,7 +662,9 @@ end;
 
 procedure MyErrorCallback(error: Integer; const description: PAnsiChar); cdecl;
 begin
+{$IFDEF DBGOUT}
 	writeln('Error ',error,':', description);
+{$ENDIF}
 end;
 
 {$CALLING DEFAULT} 
@@ -683,8 +691,58 @@ begin
 	writeln('GLFW initialized');
 {$ENDIF}
 
-	ScreenW := 640;
-	ScreenH := 480;
+	case mode of
+	m320x200:
+		begin
+			ScreenW := 320;
+			ScreenH := 200;
+		end;
+	m640x200:
+		begin
+			ScreenW := 640;
+			ScreenH := 200;
+		end;
+	m640x350:
+		begin
+			ScreenW := 640;
+			ScreenH := 350;
+		end;
+	m640x480:
+		begin
+			ScreenW := 640;
+			ScreenH := 480;
+		end;
+	m800x600:
+		begin
+			ScreenW := 800;
+			ScreenH := 600;
+		end;
+	m720x350:
+		begin
+			ScreenW := 720;
+			ScreenH := 350;
+		end;
+	m1024x768:
+		begin
+			ScreenW := 1024;
+			ScreenH := 768;
+		end;
+	m1280x1024:
+		begin
+			ScreenW := 1280;
+			ScreenH := 1024;
+		end;
+	//mDefault:
+	//mMaximized:
+	//mFullScr:
+	//mCustom:
+			
+	else 
+		ScreenW := 640;
+		ScreenH := 480;
+	end;
+
+
 
 	newTitle := nil;
 	newTitle := StrAlloc (length(title)+1);
@@ -754,8 +812,9 @@ begin
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadidentity();
-	glScalef(2/(ScreenW + 1),-2/(ScreenH + 1),1);	
-	glTranslatef(-ScreenW/2,-ScreenH/2,0);
+	//glScalef(2/(ScreenW + 1),-2/(ScreenH + 1),1);	
+	glScalef(2/(ScreenW),-2/(ScreenH),1);
+	glTranslatef(-(ScreenW - 2)/2,-ScreenH/2,0);
 	
 	glClear(GL_COLOR_BUFFER_BIT);
 
@@ -775,6 +834,13 @@ begin
 	bufRIndex := 0;
 	bufWIndex := 0;
 	bufCurSize := 0;
+
+	SetColor(white);
+	SetBkColor(black);
+	SetFillStyle(solidFill, white);
+
+	UpdateGraph(UpdateOn);
+	ClearDevice();
 end;
 
 procedure ClearDevice;
@@ -1231,12 +1297,13 @@ begin
 
 	glBegin(GL_LINE_STRIP);
 
-	while fi <= fistop do
+	while fi < fistop do
 	begin
 		glColor3f(frColor.r,frColor.g,frColor.b);
 		glVertex2d(x + xradius*cos(fi), y-yradius*sin(fi));
 		fi := fi + fistep;
 	end;
+	glVertex2d(x + xradius*cos(fistop), y-yradius*sin(fistop));
 
 	glEnd();
 
@@ -1272,11 +1339,12 @@ begin
 	glColor3f(fillColor.r,fillColor.g,fillColor.b);
 
 	fi := 0;
-	while fi <= fistop do
+	while fi < fistop do
 	begin		
 		glVertex2d(x + xradius*cos(fi), y-yradius*sin(fi));
 		fi := fi + fistep;
 	end;
+	glVertex2d(x + xradius*cos(fistop), y-yradius*sin(fistop));
 
 	glEnd();
 
@@ -1285,11 +1353,12 @@ begin
 	glColor3f(frColor.r,frColor.g,frColor.b);
 
 	fi := 0;
-	while fi <= fistop do
+	while fi < fistop do
 	begin		
 		glVertex2d(x + xradius*cos(fi), y-yradius*sin(fi));
 		fi := fi + fistep;
 	end;
+	glVertex2d(x + xradius*cos(fistop), y-yradius*sin(fistop));
 
 	glEnd();
 
@@ -1331,11 +1400,12 @@ begin
 	glColor3f(fillColor.r,fillColor.g,fillColor.b);
 
 	fi := start*PI/180;
-	while fi <= fistop do
+	while fi < fistop do
 	begin		
 		glVertex2d(x + xradius*cos(fi), y-yradius*sin(fi));
 		fi := fi + fistep;
 	end;
+	glVertex2d(x + xradius*cos(fistop), y-yradius*sin(fistop));
 
 	glEnd();
 
@@ -1344,11 +1414,13 @@ begin
 	glColor3f(frColor.r,frColor.g,frColor.b);
 
 	fi := start*PI/180;
-	while fi <= fistop do
+	while fi < fistop do
 	begin		
 		glVertex2d(x + xradius*cos(fi), y-yradius*sin(fi));
 		fi := fi + fistep;
 	end;
+	glVertex2d(x + xradius*cos(fistop), y-yradius*sin(fistop));
+
 
 	glEnd();
 
@@ -1392,11 +1464,12 @@ begin
 	glVertex2d(x, y);
 
 	fi := start*PI/180;
-	while fi <= fistop do
+	while fi < fistop do
 	begin		
 		glVertex2d(x + xradius*cos(fi), y-yradius*sin(fi));
 		fi := fi + fistep;
 	end;
+	glVertex2d(x + xradius*cos(fistop), y-yradius*sin(fistop));
 
 	glEnd();
 
@@ -1407,11 +1480,12 @@ begin
 	glVertex2d(x, y);
 
 	fi := start*PI/180;
-	while fi <= fistop do
+	while fi < fistop do
 	begin		
 		glVertex2d(x + xradius*cos(fi), y-yradius*sin(fi));
 		fi := fi + fistep;
 	end;
+	glVertex2d(x + xradius*cos(fistop), y-yradius*sin(fistop));
 
 	glEnd();
 
@@ -1622,38 +1696,42 @@ begin
 	fi := pi;
 	fistop := 3*pi/2;
 
-	while fi <= fistop do
+	while fi < fistop do
 	begin		
 		glVertex2d(x1 + xradius + xradius*cos(fi), y1 + yradius + yradius*sin(fi));
 		fi := fi + fistep;
 	end;
+	glVertex2d(x1 + xradius + xradius*cos(fistop), y1 + yradius + yradius*sin(fistop));
 
 	fi := 3*pi/2;
 	fistop := 2*pi;
 
-	while fi <= fistop do
+	while fi < fistop do
 	begin		
 		glVertex2d(x2 - xradius + xradius*cos(fi), y1 + yradius + yradius*sin(fi));
 		fi := fi + fistep;
 	end;
+	glVertex2d(x2 - xradius + xradius*cos(fistop), y1 + yradius + yradius*sin(fistop));
 
 	fi := 0;
 	fistop := pi/2;
 
-	while fi <= fistop do
+	while fi < fistop do
 	begin		
 		glVertex2d(x2 - xradius + xradius*cos(fi), y2 - yradius + yradius*sin(fi));
 		fi := fi + fistep;
 	end;
+	glVertex2d(x2 - xradius + xradius*cos(fistop), y2 - yradius + yradius*sin(fistop));
 
 	fi := pi/2;
 	fistop := pi;
 
-	while fi <= fistop do
+	while fi < fistop do
 	begin		
 		glVertex2d(x1 + xradius + xradius*cos(fi), y2 - yradius + yradius*sin(fi));
 		fi := fi + fistep;
 	end;
+	glVertex2d(x1 + xradius + xradius*cos(fistop), y2 - yradius + yradius*sin(fistop));
 end;
 
 procedure RoundRect(x1,y1,x2,y2,r:smallint);
@@ -1878,10 +1956,12 @@ begin
 		end;
 
 	UpdateOn:
-		//if not(grUpdate) then
+		if not grDirect then
 		begin
+			glfwSwapBuffers(graphWindow);
+
 			grUpdate:=true;
-			grDirect:=true;
+			grDirect:=true;			
 			//SetVisualPage(visualPage);
 		end;
 	
@@ -1890,5 +1970,435 @@ begin
 			glfwSwapBuffers(graphWindow);
 	end;
 end;
+
+const
+	FontWidth = 6;
+	FontHeigth = 11;
+
+	FontSpacing = 2;
+
+procedure UnknownSymbol(var x,y : integer);
+begin
+	Rectangle(x, y-FontHeigth, x+FontWidth, y);
+end;
+
+procedure UpperA(var x,y : integer);
+begin
+	MoveTo(x,y);
+
+	lineTo(round(x+FontWidth/2), y-FontHeigth);
+	lineTo(x+FontWidth, y);
+
+	line(round(x+FontWidth/4), round(y-FontHeigth/2 + 1), round(x+3*FontWidth/4), round(y-FontHeigth/2 + 1));
+end;
+
+procedure UpperB(var x,y : integer);
+var
+	xradius, yradius: Integer;
+begin
+
+	xradius := FontWidth div 2;
+	yradius := (FontHeigth+4) div 4;
+
+	MoveTo(x,y);
+	LineRel(0, - FontHeigth);
+
+	Ellipse(x, y - FontHeigth + yradius, 0, 90, xradius, yradius);
+	Ellipse(x, y - FontHeigth + yradius, 270, 360, xradius, yradius);
+
+	Ellipse(x, y - yradius, 0, 90, FontWidth, yradius);
+	Ellipse(x, y - yradius, 270, 360, FontWidth, yradius);
+end;
+
+procedure UpperC(var x,y : integer);
+begin
+	Ellipse(x+FontWidth div 2, y-FontHeigth div 2, 50, 310, FontWidth div 2, FontHeigth div 2);
+end;
+
+procedure UpperD(var x,y : integer);
+begin
+	Ellipse(x+FontWidth div 2, y-FontHeigth div 2, 0, 90, FontWidth div 2, FontHeigth div 2);
+	Ellipse(x+FontWidth div 2, y-FontHeigth div 2, 270, 360, FontWidth div 2, FontHeigth div 2);
+	moveto(x+FontWidth div 2, y);
+	lineTo(x,y);
+	linerel(0, -FontHeigth);
+	LineRel(FontWidth div 2,0);
+end;
+
+procedure UpperE(var x,y : integer);
+begin
+	MoveTo(x+FontWidth, y - FontHeigth);
+	LineRel(-FontWidth, 0);
+	LineRel(0,FontHeigth);
+	LineRel(FontWidth, 0);
+	MoveRel(0, -(FontHeigth div 2));
+	LineRel(-FontWidth, 0);
+end;
+
+procedure UpperF(var x,y : integer);
+begin
+	moveto(x,y);
+	lineTo(x, y-FontHeigth);
+	lineto(x+FontWidth, y-FontHeigth);
+	line(x, y-FontHeigth div 2, x + FontWidth - FontWidth div 4, y-FontHeigth div 2);
+end;
+
+procedure UpperG(var x,y : integer);
+begin
+	Ellipse(x+FontWidth div 2, y-FontHeigth div 2, 50, 270, FontWidth div 2, FontHeigth div 2);
+	MoveTo(x + FontWidth - FontWidth div 2, y);
+	linerel(FontWidth div 2, 0);
+	LineRel(0, -FontHeigth div 3);
+	LineRel(-FontWidth div 2, 0);
+end;
+
+procedure UpperH(var x,y : integer);
+begin
+	line(x, y, x, y-FontHeigth);
+	line(x + FontWidth, y, x+ FontWidth, y-FontHeigth);
+	line(x, y-FontHeigth div 2, x + FontWidth, y-FontHeigth div 2);
+end;
+
+procedure UpperI(var x,y : integer);
+begin
+	line(x + FontWidth div 4, y-FontHeigth, x + FontWidth - FontWidth div 4, y-FontHeigth);
+	line(x + FontWidth div 4, y, x + FontWidth - FontWidth div 4, y);
+
+	Line(x+ FontWidth div 2, y, x+FontWidth div 2, y-FontHeigth);
+end;
+
+procedure UpperJ(var x,y : integer);
+begin
+	line(x+FontWidth, y-FontHeigth, x+FontWidth div 2, y-FontHeigth);
+	line(x+FontWidth, y-FontHeigth, x+FontWidth, y-FontWidth div 2);
+	arc(x+FontWidth div 2, y - FontWidth div 2, 180, 360, FontWidth div 2);
+end;
+
+procedure UpperK(var x,y : integer);
+begin
+	line(x,y, x, y-FontHeigth);
+	moveto(x+FontWidth, y-FontHeigth);
+	lineto(x, y-FontHeigth div 2);
+	lineto(x+FontWidth, y);
+end;
+
+procedure UpperL(var x,y : integer);
+begin
+	moveto(x, y-FontHeigth);
+	lineTo(x,y);
+	lineTo(x+FontWidth, y);
+end;
+
+procedure UpperM(var x,y : integer);
+begin	
+	MoveTo(x, y);
+	lineTo(x + FontWidth div 4, y-FontHeigth);
+	lineto(x+ FontWidth div 2, y-FontHeigth div 2);
+	lineTo(x + FontWidth - FontWidth div 4, y - FontHeigth);
+	lineTo(x + FontWidth, y);
+end;
+
+procedure UpperN(var x,y : integer);
+begin
+	moveto(x,y);
+	LineRel(0, -FontHeigth);
+	LineRel(FontWidth, FontHeigth);
+	LineRel(0, -FontHeigth);
+end;
+
+procedure UpperO(var x,y : integer);
+begin
+	Ellipse(x+FontWidth div 2, y-FontHeigth div 2, 0, 360, FontWidth div 2, FontHeigth div 2);
+end;
+
+procedure UpperP(var x,y : integer);
+var
+	H3: Integer;
+begin
+	h3 := ceil(FontHeigth/3);
+
+	Line(x,y,x,y-FontHeigth);
+	Ellipse(x, y - FontHeigth + h3, 0, 90, FontWidth, h3);
+	Ellipse(x, y - FontHeigth + h3, 270, 360, FontWidth, h3);
+end;
+
+procedure UpperQ(var x,y : integer);
+begin	
+	Ellipse(x+FontWidth div 2, y-FontHeigth div 2, 0, 360, FontWidth div 2, FontHeigth div 2);
+	line(x+FontWidth div 2, y-FontHeigth div 4, x+FontWidth, y+FontHeigth div 4);
+end;
+
+procedure UpperR(var x,y : integer);
+var
+	h3: Integer;
+begin
+	h3 := round(FontHeigth/4);
+
+	Line(x,y,x,y-FontHeigth);
+	Ellipse(x, y - FontHeigth + h3, 0, 90, FontWidth, h3);
+	Ellipse(x, y - FontHeigth + h3, 270, 360, FontWidth, h3);
+
+	line(x, y - FontHeigth + 2*h3, x + FontWidth, y);
+end;
+
+procedure UpperS(var x,y : integer);	
+var
+	xradius, yradius: Integer;
+begin
+
+	xradius := FontWidth div 2;
+	yradius := (FontHeigth+4) div 4;
+
+	Ellipse(x + xradius, y - FontHeigth + yradius, 30, 280, xradius, yradius);
+	Ellipse(x + xradius, y - yradius, 0, 100, xradius, yradius);
+	Ellipse(x + xradius, y - yradius, 210, 360, xradius, yradius);
+end;
+
+procedure UpperT(var x,y : integer);
+begin
+	line(x, y-FontHeigth, x + FontWidth, y-FontHeigth);
+
+	Line(x+ FontWidth div 2, y, x+FontWidth div 2, y-FontHeigth);
+end;
+
+procedure UpperU(var x,y : integer);
+begin
+	line(x, y-FontHeigth, x, y-FontWidth div 2);
+	line(x+FontWidth, y-FontHeigth, x+FontWidth, y-FontWidth div 2);
+	arc(x+FontWidth div 2, y - FontWidth div 2, 180, 360, FontWidth div 2);
+end;
+
+
+procedure UpperV(var x,y : integer);
+begin
+	MoveTo(x,y-FontHeigth);
+
+	lineTo(round(x+FontWidth/2), y);
+	lineTo(x+FontWidth, y-FontHeigth);
+end;
+
+procedure UpperW(var x,y : integer);	
+begin
+	MoveTo(x, y - FontHeigth);
+	lineTo(x + FontWidth div 4, y);
+	lineto(x+ FontWidth div 2, y-FontHeigth div 2);
+	lineTo(x + FontWidth - FontWidth div 4, y);
+	lineTo(x + FontWidth, y - FontHeigth);
+end;
+
+procedure UpperX(var x,y : integer);
+begin
+	line (x,y, x+ FontWidth, y-FontHeigth);
+	line (x,y-FontHeigth, x+ FontWidth, y);
+end;
+
+procedure UpperY(var x,y : integer);
+begin
+	MoveTo(x, y-FontHeigth);
+	LineTo(x + FontWidth div 2, y - FontHeigth div 2);
+	LineTo(x + FontWidth, y - FontHeigth);
+
+	MoveTo(x+FontWidth div 2, y-FontHeigth div 2);
+	LineTo(x+FontWidth div 2, y);
+end;
+
+procedure LetterSpace(var x,y : integer);
+begin	
+end;
+
+procedure UpperZ(var x,y : integer);
+begin
+	moveto(x, y - FontHeigth);
+	LineRel(FontWidth, 0);
+	LineRel(-FontWidth, FontHeigth);
+	LineRel(FontWidth, 0);
+end;
+
+procedure Symbol0(var x,y : integer);
+begin
+	UpperO(x,y);
+
+	line(x,y,x+FontWidth,y-FontHeigth);
+end;
+
+procedure Symbol1(var x,y : integer);
+begin
+	line(x + FontWidth div 4, y, x + FontWidth - FontWidth div 4, y);
+	MoveTo(x + FontWidth div 2, y);
+	LineRel(0, -FontHeigth);
+	LineTo(x, y-FontHeigth + FontHeigth div 4);	
+end;
+
+procedure Symbol2(var x,y : integer);
+var
+	yradius: Integer;
+begin
+	yradius := (FontHeigth + 4) div 4;
+
+	Ellipse(x + FontWidth - FontWidth div 2, y - FontHeigth + yradius, 0, 180, FontWidth div 2, yradius);
+
+	MoveTo(x + FontWidth, y - FontHeigth + yradius);
+	lineto(x,y);
+	LineRel(FontWidth, 0);
+end;
+
+procedure Symbol3(var x,y : integer);
+var
+	yradius: Integer;
+begin
+	yradius := (FontHeigth + 4) div 4;
+	Ellipse(x + FontWidth div 2, y - FontHeigth + yradius, 0, 120, FontWidth div 2, yradius);
+	Ellipse(x + FontWidth div 2, y - FontHeigth + yradius, 260, 360, FontWidth div 2, yradius);
+
+	Ellipse(x + FontWidth div 2, y - yradius, 0, 100, FontWidth div 2, yradius);
+	Ellipse(x + FontWidth div 2, y - yradius, 240, 360, FontWidth div 2, yradius);
+end;
+
+procedure Symbol4(var x,y : integer);
+begin
+	MoveTo(x + ((FontWidth * 3) div 4), y);
+	LineRel(0, -FontHeigth);
+	LineTo(x, y-FontHeigth div 3);
+	LineRel(FontWidth, 0);	
+end;
+
+procedure Symbol5(var x,y : integer);
+var
+	yradius: Integer;
+begin
+	yradius := (FontHeigth + 3) div 4;
+
+	Ellipse(x, y - yradius, 0, 90, FontWidth, yradius);
+	Ellipse(x, y - yradius, 270, 360, FontWidth, yradius);
+
+	moveto(x, y - 2*yradius);
+	lineto(x, y - FontHeigth);
+	lineto(x + FontWidth, y - FontHeigth);
+end;
+
+procedure Symbol6(var x,y : integer);
+var
+	yradius: Integer;
+begin
+	yradius := (FontHeigth + 4) div 4;
+	Ellipse(x + FontWidth div 2, y - FontHeigth div 2, 90, 270, FontWidth div 2, FontHeigth div 2);
+	Ellipse(x + FontWidth div 2, y - yradius, 0, 360, FontWidth div 2, yradius);
+end;
+
+procedure Symbol7(var x,y : integer);
+begin
+	MoveTo(x, y - FontHeigth);
+	LineRel(FontWidth, 0);
+	LineRel(-FontWidth, FontHeigth);
+end;
+
+procedure Symbol8(var x,y : integer);
+var
+	yradius: Integer;
+begin
+	yradius := (FontHeigth + 4) div 4;
+	Ellipse(x + FontWidth div 2, y - FontHeigth + yradius, 0, 360, FontWidth div 2, yradius);
+	Ellipse(x + FontWidth div 2, y - yradius, 0, 360, FontWidth div 2, yradius);
+end;
+
+procedure Symbol9(var x,y : integer);
+var
+	yradius: Integer;
+begin
+	yradius := (FontHeigth + 4) div 4;
+
+	Ellipse(x + FontWidth div 2, y - FontHeigth div 2, 0, 90, FontWidth div 2, FontHeigth div 2);
+	Ellipse(x + FontWidth div 2, y - FontHeigth div 2, 270, 360, FontWidth div 2, FontHeigth div 2);
+	
+	Ellipse(x + FontWidth div 2, y - FontHeigth + yradius, 0, 360, FontWidth div 2, yradius);
+end;
+
+procedure OutText(const textstring:shortstring);
+var
+	i: Integer;
+	x,y: integer;
+begin
+{$IFDEF DBGOUT}	
+	writeln('Outtext with string: "',textstring,'"');
+{$ENDIF}	
+	
+	grResult:=grOK;
+	if not(grEnabled) then begin
+		grResult:=grNoInitGraph;
+		Exit;
+	end;
+
+	
+
+	for i:= 1 to length(textstring) do
+	begin
+		x := actX;
+		y := actY;
+
+		case textstring[i] of
+		' ' : LetterSpace(x,y);
+		'a', 'A' : UpperA(x,y);
+		'b', 'B' : UpperB(x,y);
+		'c', 'C' : UpperC(x,y);
+		'd', 'D' : UpperD(x,y);
+		'e', 'E' : UpperE(x,y);
+		'f', 'F' : UpperF(x,y);
+		'g', 'G' : UpperG(x,y);
+		'h', 'H' : UpperH(x,y);
+		'i', 'I' : UpperI(x,y);
+		'j', 'J' : UpperJ(x,y);
+		'k', 'K' : UpperK(x,y);
+		'l', 'L' : UpperL(x,y);		
+		'm', 'M' : UpperM(x,y);
+		'n', 'N' : UpperN(x,y);
+		'o', 'O' : UpperO(x,y);
+		'p', 'P' : UpperP(x,y);
+		'q', 'Q' : UpperQ(x,y);
+		'r', 'R' : UpperR(x,y);
+		's', 'S' : UpperS(x,y);
+		't', 'T' : UpperT(x,y);
+		'u', 'U' : UpperU(x,y);
+		'v', 'V' : UpperV(x,y);
+		'w', 'W' : UpperW(x,y);
+		'x', 'X' : UpperX(x,y);
+		'y', 'Y' : UpperY(x,y);
+		'z', 'Z' : UpperZ(x,y);
+		'1' : Symbol1(x,y);
+		'2' : Symbol2(x,y);
+		'3' : Symbol3(x,y);
+		'4' : Symbol4(x,y);
+		'5' : Symbol5(x,y);
+		'6' : Symbol6(x,y);
+		'7' : Symbol7(x,y);
+		'8' : Symbol8(x,y);
+		'9' : Symbol9(x,y);
+		'0' : Symbol0(x,y);
+		else
+			UnknownSymbol(x, y);
+		end;
+
+		actX := x + FontWidth + FontSpacing;
+
+		actY := y;
+	end;
+end;
+
+procedure OutTextXY(x,y:smallint; const textstring:shortstring);
+begin
+{$IFDEF DBGOUT}	
+	writeln('OuttextXY(',x,',',y,') with string: "',textstring,'"');
+{$ENDIF}	
+
+	grResult:=grOK;
+	if not(grEnabled) then begin
+		grResult:=grNoInitGraph;
+		Exit;
+	end;
+
+	MoveTo(x,y);
+
+	OutText(textstring);
+end;
+
 
 end.
