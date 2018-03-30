@@ -4,7 +4,8 @@ unit osxbgi;
 
 interface
 
-{$DEFINE DBGOUT}
+{DEFINE DBGOUT}
+
 const
 	defaultTitle: pchar = 'Graphic window'#0;
 
@@ -441,6 +442,128 @@ const
 
   GLFW_KEY_LAST = GLFW_KEY_MENU;
 
+const
+	{ Windows virtual keys }
+	VK_SPACE = GLFW_KEY_SPACE;
+	VK_APOSTROPHE = GLFW_KEY_APOSTROPHE;
+	VK_COMMA = GLFW_KEY_COMMA;
+	VK_MINUS = GLFW_KEY_MINUS;
+	VK_PERIOD = GLFW_KEY_PERIOD;
+	VK_SLASH = GLFW_KEY_SLASH;
+	VK_0 = GLFW_KEY_0;
+	VK_1 = GLFW_KEY_1;
+	VK_2 = GLFW_KEY_2;
+	VK_3 = GLFW_KEY_3;
+	VK_4 = GLFW_KEY_4;
+	VK_5 = GLFW_KEY_5;
+	VK_6 = GLFW_KEY_6;
+	VK_7 = GLFW_KEY_7;
+	VK_8 = GLFW_KEY_8;
+	VK_9 = GLFW_KEY_9;
+	VK_SEMICOLON = GLFW_KEY_SEMICOLON;
+	VK_EQUAL = GLFW_KEY_EQUAL;
+	VK_A = GLFW_KEY_A;
+	VK_B = GLFW_KEY_B;
+	VK_C = GLFW_KEY_C;
+	VK_D = GLFW_KEY_D;
+	VK_E = GLFW_KEY_E;
+	VK_F = GLFW_KEY_F;
+	VK_G = GLFW_KEY_G;
+	VK_H = GLFW_KEY_H;
+	VK_I = GLFW_KEY_I;
+	VK_J = GLFW_KEY_J;
+	VK_K = GLFW_KEY_K;
+	VK_L = GLFW_KEY_L;
+	VK_M = GLFW_KEY_M;
+	VK_N = GLFW_KEY_N;
+	VK_O = GLFW_KEY_O;
+	VK_P = GLFW_KEY_P;
+	VK_Q = GLFW_KEY_Q;
+	VK_R = GLFW_KEY_R;
+	VK_S = GLFW_KEY_S;
+	VK_T = GLFW_KEY_T;
+	VK_U = GLFW_KEY_U;
+	VK_V = GLFW_KEY_V;
+	VK_W = GLFW_KEY_W;
+	VK_X = GLFW_KEY_X;
+	VK_Y = GLFW_KEY_Y;
+	VK_Z = GLFW_KEY_Z;
+	VK_LEFT_BRACKET = GLFW_KEY_LEFT_BRACKET;
+	VK_BACKSLASH = GLFW_KEY_BACKSLASH;
+	VK_RIGHT_BRACKET = GLFW_KEY_RIGHT_BRACKET;
+	VK_GRAVE_ACCENT = GLFW_KEY_GRAVE_ACCENT;
+	VK_WORLD_1 = GLFW_KEY_WORLD_1;
+	VK_WORLD_2 = GLFW_KEY_WORLD_2;
+	VK_ESCAPE = GLFW_KEY_ESCAPE;
+	VK_ENTER = GLFW_KEY_ENTER;
+	VK_TAB = GLFW_KEY_TAB;
+	VK_BACKSPACE = GLFW_KEY_BACKSPACE;
+	VK_INSERT = GLFW_KEY_INSERT;
+	VK_DELETE = GLFW_KEY_DELETE;
+	VK_RIGHT = GLFW_KEY_RIGHT;
+	VK_LEFT = GLFW_KEY_LEFT;
+	VK_DOWN = GLFW_KEY_DOWN;
+	VK_UP = GLFW_KEY_UP;
+	VK_PAGE_UP = GLFW_KEY_PAGE_UP;
+	VK_PAGE_DOWN = GLFW_KEY_PAGE_DOWN;
+	VK_HOME = GLFW_KEY_HOME;
+	VK_END = GLFW_KEY_END;
+	VK_CAPS_LOCK = GLFW_KEY_CAPS_LOCK;
+	VK_SCROLL_LOCK = GLFW_KEY_SCROLL_LOCK;
+	VK_NUM_LOCK = GLFW_KEY_NUM_LOCK;
+	VK_PRINT_SCREEN = GLFW_KEY_PRINT_SCREEN;
+	VK_PAUSE = GLFW_KEY_PAUSE;
+	VK_F1 = GLFW_KEY_F1;
+	VK_F2 = GLFW_KEY_F2;
+	VK_F3 = GLFW_KEY_F3;
+	VK_F4 = GLFW_KEY_F4;
+	VK_F5 = GLFW_KEY_F5;
+	VK_F6 = GLFW_KEY_F6;
+	VK_F7 = GLFW_KEY_F7;
+	VK_F8 = GLFW_KEY_F8;
+	VK_F9 = GLFW_KEY_F9;
+	VK_F10 = GLFW_KEY_F10;
+	VK_F11 = GLFW_KEY_F11;
+	VK_F12 = GLFW_KEY_F12;
+	VK_F13 = GLFW_KEY_F13;
+	VK_F14 = GLFW_KEY_F14;
+	VK_F15 = GLFW_KEY_F15;
+	VK_F16 = GLFW_KEY_F16;
+	VK_F17 = GLFW_KEY_F17;
+	VK_F18 = GLFW_KEY_F18;
+	VK_F19 = GLFW_KEY_F19;
+	VK_F20 = GLFW_KEY_F20;
+	VK_F21 = GLFW_KEY_F21;
+	VK_F22 = GLFW_KEY_F22;
+	VK_F23 = GLFW_KEY_F23;
+	VK_F24 = GLFW_KEY_F24;
+	VK_F25 = GLFW_KEY_F25;
+	VK_KP_0 = GLFW_KEY_KP_0;
+	VK_KP_1 = GLFW_KEY_KP_1;
+	VK_KP_2 = GLFW_KEY_KP_2;
+	VK_KP_3 = GLFW_KEY_KP_3;
+	VK_KP_4 = GLFW_KEY_KP_4;
+	VK_KP_5 = GLFW_KEY_KP_5;
+	VK_KP_6 = GLFW_KEY_KP_6;
+	VK_KP_7 = GLFW_KEY_KP_7;
+	VK_KP_8 = GLFW_KEY_KP_8;
+	VK_KP_9 = GLFW_KEY_KP_9;
+	VK_KP_DECIMAL = GLFW_KEY_KP_DECIMAL;
+	VK_KP_DIVIDE = GLFW_KEY_KP_DIVIDE;
+	VK_KP_MULTIPLY = GLFW_KEY_KP_MULTIPLY;
+	VK_KP_SUBTRACT = GLFW_KEY_KP_SUBTRACT;
+	VK_KP_ADD = GLFW_KEY_KP_ADD;
+	VK_KP_ENTER = GLFW_KEY_KP_ENTER;
+	VK_KP_EQUAL = GLFW_KEY_KP_EQUAL;
+	VK_LEFT_SHIFT = GLFW_KEY_LEFT_SHIFT;
+	VK_LEFT_CONTROL = GLFW_KEY_LEFT_CONTROL;
+	VK_LEFT_ALT = GLFW_KEY_LEFT_ALT;
+	VK_LEFT_SUPER = GLFW_KEY_LEFT_SUPER;
+	VK_RIGHT_SHIFT = GLFW_KEY_RIGHT_SHIFT;
+	VK_RIGHT_CONTROL = GLFW_KEY_RIGHT_CONTROL;
+	VK_RIGHT_ALT = GLFW_KEY_RIGHT_ALT;
+	VK_RIGHT_SUPER = GLFW_KEY_RIGHT_SUPER;
+	VK_MENU = GLFW_KEY_MENU;
 
 {initialization exported routines}
 procedure ClearDevice;
@@ -465,6 +588,7 @@ procedure InitGraph(var driver,mode:smallint; const title:shortstring);
 procedure UpdateGraph(bit:word);
 
 {crt overrides}
+function IsKeyPressed(VirtualKey: word): boolean;
 function KeyPressed: boolean;
 function ReadKey: char;
 procedure Delay(ms: longint);
@@ -629,6 +753,9 @@ var
 	nr_readkey,nr_inputkey  : longint;
 	keyBuf                  : array[0..KeyBufSize-1] of char;
 
+	pressedKeys : array[0..GLFW_KEY_LAST] of boolean;
+	
+
 
 procedure AddKey(c:char); forward;
 procedure AddExtKey(c:char);  forward;
@@ -640,11 +767,25 @@ procedure MyKeyCallback(window: PGLFWwindow; key,scancode,action,mods : cint);
 begin
 {$IFDEF DBGOUT}	
 	writeln('key cb: (',key:5,scancode:5,action:5,mods:5,')');
-	//writeln('key cb:', mods:5, mods and $20:5);
 {$ENDIF}
 
 	if (action = GLFW_PRESS) then
+	begin
 		TranslateKeys(key);
+	end;
+
+	if (key >=0) and (key <= GLFW_KEY_LAST) then
+	begin
+		if (action = GLFW_PRESS) then
+		begin
+			pressedKeys[key] := true;
+		end;
+
+		if (action = GLFW_RELEASE) then
+		begin
+			pressedKeys[key] := false;
+		end;
+	end;
 end;
 
 procedure MyCharCallback(window: PGLFWwindow; a:cuint);
@@ -676,6 +817,7 @@ var
 	res : integer;
 	newTitle : pchar;
 	width, height: cint;
+	i: integer;
 begin
 	grResult := grError;
 
@@ -839,6 +981,11 @@ begin
 	SetBkColor(black);
 	SetFillStyle(solidFill, white);
 
+	for i := 0 to GLFW_KEY_LAST do
+	begin
+		pressedKeys[i] := false;
+	end;
+
 	UpdateGraph(UpdateOn);
 	ClearDevice();
 end;
@@ -914,7 +1061,10 @@ end;
 
 procedure AddKeyInternal(c:char);
 begin
+{$IFDEF DBGOUT}
 	writeln('AddkeyInternal: ', ord(c));
+{$ENDIF}
+
 	keyBuf[bufWIndex] := c;
 	bufWIndex := (bufWIndex + 1) mod KeyBufSize;
 	inc(bufCurSize);
@@ -922,7 +1072,10 @@ end;
 
 procedure AddKey(c:char);
 begin
+{$IFDEF DBGOUT}
 	writeln('Addkey: ', ord(c));
+{$ENDIF}
+
 	if (bufCurSize < KeyBufSize) then
 	begin
 		AddKeyInternal(c);
@@ -947,8 +1100,9 @@ begin
 	ctrl_key := (glfwGetKey(graphWindow, GLFW_KEY_LEFT_CONTROL) <> GLFW_RELEASE) or (glfwGetKey(graphWindow, GLFW_KEY_RIGHT_CONTROL) <> GLFW_RELEASE);
 	alt_key := (glfwGetKey(graphWindow, GLFW_KEY_LEFT_ALT) <> GLFW_RELEASE) or (glfwGetKey(graphWindow, GLFW_KEY_RIGHT_ALT) <> GLFW_RELEASE);
 
-
+{$IFDEF DBGOUT}
 	writeln('TranslateKeys: (',code:5,shift_key:6,ctrl_key:6,alt_key:6,')');
+{$ENDIF}
 
 	case code of
 	GLFW_KEY_SPACE : if alt_key then AddExtKey(#11);
@@ -1012,7 +1166,9 @@ begin
 	        if alt_key then AddExtKey(#78);
 	
 	else
-		writeln('TranslateKeys: else');
+{$IFDEF DBGOUT}
+	writeln('TranslateKeys: else');
+{$ENDIF}	
 		if ctrl_key then case code of
 			ord('0')          : AddExtKey(#10);
 			ord('1')..ord('9'): AddExtKey(chr(code-48));
@@ -1087,6 +1243,14 @@ begin
 {$IFDEF DBGOUT}
 		writeln('Readkey() returns:', result );
 {$ENDIF}
+end;
+
+function IsKeyPressed(VirtualKey: word): boolean;
+begin
+	if (VirtualKey > GLFW_KEY_LAST) then
+		IsKeyPressed := false
+	else
+		IsKeyPressed := pressedKeys[VirtualKey];
 end;
 
 function KeyPressed: boolean;
