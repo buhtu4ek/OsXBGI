@@ -565,6 +565,37 @@ const
 	VK_RIGHT_SUPER = GLFW_KEY_RIGHT_SUPER;
 	VK_MENU = GLFW_KEY_MENU;
 
+{Text settings}
+type TextSettingsType =
+	record
+		font,direction,charsize,horiz,vert: word;
+	end;
+
+{justify constants for text}
+const
+	LeftText		= word(0);
+	CenterText		= word(1);
+	RightText		= word(2);
+	TopText			= word(0);
+	BottomText		= word(1);
+	BaselineText	= word(2);
+
+{direction constants for text}
+	HorizDir	= word( 0);
+	VertDir 	= word(90);
+
+{font constants for text}
+	//CourierNewFont = word(0);
+	//MSSansSerifFont = word(1);
+	//TimesNewRomanFont = word(2);
+	//ArialFont = word(3);
+	DefaultFont = 0;
+
+const
+	ItalicFont		= word($1000);
+	UnderlineFont	= word($0100);
+	BoldFont		= word($0010);
+
 {initialization exported routines}
 procedure ClearDevice;
 procedure CloseGraph;
@@ -613,9 +644,14 @@ procedure SetPalette(nrcolor,color:word);
 procedure SetRGBPalette(nrcolor,r,g,b:word);
 
 // Text routines
+procedure SetTextStyle(font,direction,charsize:word);
 procedure OutText(const textstring:shortstring);
 procedure OutTextXY(x,y:smallint; const textstring:shortstring);
 
+// Image handling functions
+function LoadImage(var bitmap: pointer; path : string) : boolean;
+procedure PutImage(x,y: smallint; bitmap: pointer);
+procedure PutImageTransparent(x,y: smallint; bitmap: pointer);
 
 type
 	        PointType = record
@@ -725,7 +761,7 @@ type
 	end;
 
 var
-	myKey : char;
+	//myKey : char;
 	grEnabled: boolean;
 
 	grDirect,grUpdate           : boolean;
@@ -743,19 +779,18 @@ var
 
 	fillSettings                : FillSettingsType;
 
-	visualPage,activePage       : word;
+	//visualPage,activePage       : word;
 
 const KeyBufSize = 32;
 
 var
 	bufRIndex, bufWIndex, bufCurSize : word;
 
-	nr_readkey,nr_inputkey  : longint;
+	//nr_readkey,nr_inputkey  : longint;
 	keyBuf                  : array[0..KeyBufSize-1] of char;
 
 	pressedKeys : array[0..GLFW_KEY_LAST] of boolean;
 	
-
 
 procedure AddKey(c:char); forward;
 procedure AddExtKey(c:char);  forward;
@@ -963,8 +998,8 @@ begin
 	actX := 0;
 	actY := 0;
 
-	visualPage := 0;
-	activePage := 0;
+	// visualPage := 0;
+	// activePage := 0;
 	
 	grDirect := true;
 	grUpdate := true;
@@ -1094,7 +1129,7 @@ end;
 procedure TranslateKeys(code:cint);
 var
 	shift_key,ctrl_key,alt_key: boolean;
-	num_lock: boolean;
+	//num_lock: boolean;
 begin
 	shift_key := (glfwGetKey(graphWindow, GLFW_KEY_LEFT_SHIFT) <> GLFW_RELEASE) or (glfwGetKey(graphWindow, GLFW_KEY_RIGHT_SHIFT) <> GLFW_RELEASE);
 	ctrl_key := (glfwGetKey(graphWindow, GLFW_KEY_LEFT_CONTROL) <> GLFW_RELEASE) or (glfwGetKey(graphWindow, GLFW_KEY_RIGHT_CONTROL) <> GLFW_RELEASE);
@@ -2106,6 +2141,617 @@ begin
 end;
 
 //
+// Image handling
+//
+type
+	bmFileHeader = packed record	{заголовок файла}
+		Typf : word; {сигнатура }
+		Size : longint; {длина файла в байтах}
+		Res1 : word; {зарезервировано}
+		Res2 : word; {зарезервировано}
+		OfBm : longint; {смещение изображения в байтах (1078)}
+	end;
+
+	bmInfoHeader = packed record {информационный заголовок}
+		Size : longint; {длина заголовка в байтах (40)}
+		Width : longint; {ширина изображения (в точках)}
+		Height : longint; {высота изображения (в точках)}
+		Planes : word; {число плоскостей (1)}
+		BitsPerPixel : word; {глубина цвета (бит на точку) (8)}
+		Compression : longint; {тип компрессии (0 - нет)}
+		SizI : longint; {размер изображения в байтах}
+		XppM : longint; {горизонтальное разрешение}
+		{(точек на метр - обычно 0)}
+		YppM : longint; {вертикальное разрешение}
+		{(точек на метр - обычно 0)}
+		NCoL : longint; {число цветов}
+		{(если максимально допустимое - 0)}
+		NCoI : longint; {число основных цветов}
+	end;
+
+	TImage = packed record
+		bmiFileHeader: bmFileHeader;
+		bmiInfoHeader: bmInfoHeader;
+		bmiBits      : array[0..0] of byte;
+	end;
+
+function LoadImageOld(var bitmap: pointer; path : string) : boolean;
+var
+	f: file;
+	size: longint;
+
+	img : ^TImage;
+begin
+	LoadImageOld := false;
+
+	{$IFDEF DBGOUT}
+	writeln('LoadImage');
+	{$ENDIF}
+
+	assign(f, path);
+{$I-}
+	reset(f, 1);
+	if IoResult <> 0 then
+	begin
+		writeln('Error ', IoResult, ' opening file ', path);
+		exit;
+	end;
+
+	size:=FileSize(f);
+	GetMem(bitmap,size);
+	BlockRead(f,bitmap^,size);
+	if IoResult <> 0 then
+	begin
+		writeln('Error ', IoResult, ' reading file ', path);
+		Close(f);
+		exit;
+	end;
+
+	Close(f);	
+{$I+}
+
+	img := bitmap;
+
+	{$IFDEF DBGOUT}
+	writeln('LoadImage Type =',img^.bmiFileHeader.Typf);
+	{$ENDIF}
+
+	if (img^.bmiFileHeader.Typf <> $4D42) then
+	begin
+		writeln('unsupported file type for ', path);
+		exit;
+	end;
+
+	if (img^.bmiInfoHeader.bitsPerPixel <> 24) then
+	begin
+		writeln('unsupported file format (not 24 bit) for ', path);
+		exit;
+	end;	
+
+	{$IF FALSE} //DEF DBGOUT}
+	writeln('LoadImage OffsetBitmap =',img^.bmiFileHeader.OfBm);
+
+	with img^.bmiInfoHeader do
+	begin
+		writeln(Size); {длина заголовка в байтах (40)}
+		writeln(Width); {ширина изображения (в точках)}
+		writeln(Height); {высота изображения (в точках)}
+		writeln(Planes); {число плоскостей (1)}
+		writeln(BitsPerPixel); {глубина цвета (бит на точку) (8)}
+		writeln(Compression); {тип компрессии (0 - нет)}
+		writeln(SizI); {размер изображения в байтах}
+		writeln(XppM); {горизонтальное разрешение}
+		{(точек на метр - обычно 0)}
+		writeln(YppM); {вертикальное разрешение}
+		{(точек на метр - обычно 0)}
+		writeln(NCoL); {число цветов}
+		{(если максимально допустимое - 0)}
+		writeln(NCoI); {число основных цветов}
+	end;
+	{$ENDIF}	
+
+	LoadImageOld := true;
+end;
+
+type
+	TTextureType = record
+		width, height : longword;
+		tex, transtex : gluint;		
+	end;
+
+function LoadImage(var bitmap: pointer; path : string) : boolean;
+var
+	f: file;
+	size: longint;
+
+	img : ^TImage;
+	bmpfile: pointer;
+
+	newTexture: ^TTextureType;
+
+	outpixels: array of byte;
+	outpixelstrans: array of byte;
+
+	pixels: ^byte;
+
+	width, height, bpp : word;
+	row,col, rowsize: word;
+
+	color, transColor : longword;
+begin
+	LoadImage := false;
+
+	{$IFDEF DBGOUT}
+	writeln('LoadImage');
+	{$ENDIF}
+
+	assign(f, path);
+{$I-}
+	reset(f, 1);
+	if IoResult <> 0 then
+	begin
+		writeln('Error ', IoResult, ' opening file ', path);
+		exit;
+	end;
+
+	size:=FileSize(f);
+	GetMem(bmpfile,size);
+	BlockRead(f,bmpfile^,size);
+	if IoResult <> 0 then
+	begin
+		writeln('Error ', IoResult, ' reading file ', path);
+		Close(f);
+		exit;
+	end;
+
+	Close(f);	
+{$I+}
+
+	img := bmpfile;
+
+	{$IFDEF DBGOUT}
+	writeln('LoadImage Type =',img^.bmiFileHeader.Typf);
+	{$ENDIF}
+
+	if (img^.bmiFileHeader.Typf <> $4D42) then
+	begin
+		writeln('unsupported file type for ', path);
+		exit;
+	end;
+
+	if (img^.bmiInfoHeader.bitsPerPixel <> 24) then
+	begin
+		writeln('unsupported file format (not 24 bit) for ', path);
+		exit;
+	end;	
+
+	{$IFDEF DBGOUT}
+	writeln('LoadImage OffsetBitmap =',img^.bmiFileHeader.OfBm);
+
+	with img^.bmiInfoHeader do
+	begin
+		writeln(Size); {длина заголовка в байтах (40)}
+		writeln(Width); {ширина изображения (в точках)}
+		writeln(Height); {высота изображения (в точках)}
+		writeln(Planes); {число плоскостей (1)}
+		writeln(BitsPerPixel); {глубина цвета (бит на точку) (8)}
+		writeln(Compression); {тип компрессии (0 - нет)}
+		writeln(SizI); {размер изображения в байтах}
+		writeln(XppM); {горизонтальное разрешение}
+		{(точек на метр - обычно 0)}
+		writeln(YppM); {вертикальное разрешение}
+		{(точек на метр - обычно 0)}
+		writeln(NCoL); {число цветов}
+		{(если максимально допустимое - 0)}
+		writeln(NCoI); {число основных цветов}
+	end;
+	{$ENDIF}	
+
+	width := img^.bmiInfoHeader.Width;
+	height := img^.bmiInfoHeader.Height;
+	bpp := img^.bmiInfoHeader.BitsPerPixel;
+
+	rowSize := ((bpp * width + 31) div 32) * 4;
+
+	pixels := bmpfile;
+	pixels := pixels + img^.bmiFileHeader.OfBm;
+
+	new(newTexture);
+
+	newTexture^.width := width;
+	newTexture^.Height := height;
+
+	SetLength(outpixels, width * height * 3);
+	SetLength(outpixelstrans, width * height * 4);
+
+
+	transColor := GetRGBColor(
+				pixels[((height - 1) * rowSize) + 2],
+				pixels[((height - 1) * rowSize) + 1],
+				pixels[((height - 1) * rowSize) + 0]
+				);
+
+	for row := 0 to height-1 do
+	begin
+		for col := 0 to width-1 do
+		begin
+			outpixels[((height - row - 1)*width + col) * 3 + 2] := pixels[(row * rowSize) + (col * 3) + 0];
+			outpixels[((height - row - 1)*width + col) * 3 + 1] := pixels[(row * rowSize) + (col * 3) + 1];
+			outpixels[((height - row - 1)*width + col) * 3 + 0] := pixels[(row * rowSize) + (col * 3) + 2];
+
+			color := GetRGBColor(
+				pixels[(row * rowSize) + (col * 3) + 2],
+				pixels[(row * rowSize) + (col * 3) + 1],
+				pixels[(row * rowSize) + (col * 3) + 0]
+				);
+
+			if (color = transColor) then
+			begin
+				outpixelstrans[((height - row - 1)*width + col) * 4 + 3] := 0; // Alpha
+			end
+			else
+			begin
+				outpixelstrans[((height - row - 1)*width + col) * 4 + 3] := 255; // Alpha
+				outpixelstrans[((height - row - 1)*width + col) * 4 + 2] := pixels[(row * rowSize) + (col * 3) + 0];
+				outpixelstrans[((height - row - 1)*width + col) * 4 + 1] := pixels[(row * rowSize) + (col * 3) + 1];
+				outpixelstrans[((height - row - 1)*width + col) * 4 + 0] := pixels[(row * rowSize) + (col * 3) + 2];				
+			end;
+		end;
+	end;
+
+	{$IFDEF DBGOUT}
+	writeln('LI2 arrays filled');
+	{$ENDIF}
+
+	FreeMem(bmpfile, size);
+
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+	glGenTextures(1, @newTexture^.tex );
+	glBindTexture(GL_TEXTURE_2D, newTexture^.tex);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, @outpixels[0]);
+
+	glGenTextures(1, @newTexture^.transtex);
+	glBindTexture(GL_TEXTURE_2D, newTexture^.transtex);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, @outpixelstrans[0]);
+
+	bitmap := newTexture;
+	LoadImage := true;
+end;
+
+function GenerateTestTexture(color:longword) : longword;
+var
+	tex: gluint;
+	i: integer;
+	pixels: array[0..299] of byte;
+	err: glenum;
+
+	r,g,b: word;
+begin
+
+	GetRGBComponents(color, r,g,b);
+	writeln('GT got colors:',r:5,g:5,b:5);
+
+	GenerateTestTexture := 0;
+	//exit;
+
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+	//glEnable(GL_TEXTURE_2D);
+
+	glGenTextures(1, @tex);
+	err := glGetError();
+	writeln('GT glGenTextures status ', err);
+
+	writeln('GT Got tex =', tex);
+
+	for i := 0 to 99 do
+	begin
+		pixels[i*3] := r;
+		pixels[i*3 + 1] := g;
+		pixels[i*3 + 2] := b;
+	end;
+
+	glBindTexture(GL_TEXTURE_2D, tex);
+	err := glGetError();
+	writeln('GT glBindTexture status ', err);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 10, 10, 0, GL_RGB, GL_UNSIGNED_BYTE, @pixels);
+	err := glGetError();
+	writeln('GT glTexImage2D status ', err);
+
+	GenerateTestTexture := tex;
+end;
+
+procedure TestTexture(x,y: smallint; texID: longword);
+var
+	err: glenum;
+begin
+
+	//glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+	glEnable(GL_TEXTURE_2D);
+
+	// glGenTextures(1, @tex);
+	// err := glGetError();
+	// writeln('glGenTextures status ', err);
+
+	writeln('TT Got tex =', texID);
+
+	glBindTexture(GL_TEXTURE_2D, texID);
+	err := glGetError();
+	writeln('TT glBindTexture status ', err);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	err := glGetError();
+	writeln('TT glTexParameteri status ', err);
+
+	// for i := 0 to 99 do
+	// begin
+	// 	pixels[i*3] := 255;
+	// 	pixels[i*3 + 1] := 0;
+	// 	pixels[i*3 + 2] := 0;
+	// end;
+
+	// writeln('GL_RGB=',GL_RGB);
+
+	// glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 10, 10, 0, GL_RGB, GL_UNSIGNED_BYTE, @pixels);
+	// err := glGetError();
+	// writeln('glTexImage2D status ', err);
+	
+	glBegin(GL_QUADS);
+	//glColor3f(1.0, 0, 1.0);
+	glTexCoord2f(0, 0);
+	glVertex2d(x, y);
+
+	glTexCoord2f(1, 0);
+	glVertex2d(x+10, y);
+
+	glTexCoord2f(1, 1);
+	glVertex2d(x+10, y+10);
+
+	glTexCoord2f(0, 1);
+	glVertex2d(x, y+10);
+
+	glEnd;
+end;
+
+
+
+procedure PutImage(x,y: smallint; bitmap: pointer);
+var
+	pTexture: ^TTextureType;
+	tex: gluint;
+
+	width, height : word;
+begin
+
+	pTexture := bitmap;
+	if (pTexture = nil) then
+	begin
+		writeln('Image was not loaded');
+		exit;
+	end;
+
+	width := pTexture^.width;
+	height := pTexture^.height;
+	tex := pTexture^.tex;
+
+	glEnable(GL_TEXTURE_2D);
+
+	glBindTexture(GL_TEXTURE_2D, tex);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+	glBegin(GL_QUADS);
+	glColor3f(1, 1, 1);
+	glTexCoord2f(0, 0);
+	glVertex2d(x, y);
+
+	glTexCoord2f(1, 0);
+	glVertex2d(x+width, y);
+
+	glTexCoord2f(1, 1);
+	glVertex2d(x+width, y+height);
+
+	glTexCoord2f(0, 1);
+	glVertex2d(x, y+height);
+
+	glEnd;
+
+	glDisable(GL_TEXTURE_2D);
+end;
+
+procedure PutImageOld(x,y: smallint; bitmap: pointer);
+var
+	 img : ^TImage;
+
+	 width, height, bpp: word;
+
+	 rowSize : word;
+
+	 pixels: ^byte;
+
+	 color: longword;
+
+	 row,col: word;
+begin
+	{$IFDEF DBGOUT}
+	writeln('PutImage');
+	{$ENDIF}
+
+	img := bitmap;
+
+	{$IFDEF DBGOUT}
+	writeln('PutImage Type =',img^.bmiFileHeader.Typf);
+	{$ENDIF}
+
+	if (img^.bmiFileHeader.Typf <> $4D42) then
+	begin
+		writeln('unsupported file type');
+		exit;
+	end;
+
+	width := img^.bmiInfoHeader.Width;
+	height := img^.bmiInfoHeader.Height;
+	bpp := img^.bmiInfoHeader.bitsPerPixel;
+
+	{$IFDEF DBGOUT}
+	writeln('PutImage Width =',Width);
+	writeln('PutImage Height =',Height);
+	writeln('PutImage Planes =',img^.bmiInfoHeader.Planes);
+	writeln('PutImage BPP =',bpp);
+	{$ENDIF}
+
+	rowSize := ((bpp * width + 31) div 32) * 4;
+
+	pixels := bitmap;
+	pixels := pixels + img^.bmiFileHeader.OfBm;
+
+	for row := 0 to height-1 do
+	begin
+		for col := 0 to width-1 do
+		begin
+			color := GetRGBColor(
+				pixels[(row * rowSize) + (col * 3) + 2],
+				pixels[(row * rowSize) + (col * 3) + 1],
+				pixels[(row * rowSize) + (col * 3) + 0]
+				);
+			PutPixel(x+col, y+height-row, color);
+		end;
+	end;
+end;
+
+procedure PutImageTransparent(x,y: smallint; bitmap: pointer);
+var
+	pTexture: ^TTextureType;
+	tex: gluint;
+
+	width, height : word;
+begin
+
+	pTexture := bitmap;
+	if (pTexture = nil) then
+	begin
+		writeln('Image was not loaded');
+		exit;
+	end;
+
+	width := pTexture^.width;
+	height := pTexture^.height;
+	tex := pTexture^.transtex;
+
+	glEnable(GL_TEXTURE_2D);
+
+	glBindTexture(GL_TEXTURE_2D, tex);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+	glEnable(GL_BLEND);
+	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	glBegin(GL_QUADS);
+	glColor3f(1.0, 1.0, 1.0);
+	glTexCoord2f(0, 0);
+	glVertex2d(x, y);
+
+	glTexCoord2f(1, 0);
+	glVertex2d(x+width, y);
+
+	glTexCoord2f(1, 1);
+	glVertex2d(x+width, y+height);
+
+	glTexCoord2f(0, 1);
+	glVertex2d(x, y+height);
+
+	glEnd;
+
+	glDisable(GL_TEXTURE_2D);
+	glDisable(GL_BLEND);
+end;
+
+procedure PutImageTransparentOld(x,y: smallint; bitmap: pointer);
+var
+	 img : ^TImage;
+
+	 width, height, bpp: word;
+
+	 rowSize : word;
+
+	 pixels: ^byte;
+
+	 color, transColor: longword;
+
+	 row,col: word;
+begin
+	{$IFDEF DBGOUT}
+	writeln('PutImageTrans');
+	{$ENDIF}
+
+	img := bitmap;
+
+	{$IFDEF DBGOUT}
+	writeln('PutImageTrans Type =',img^.bmiFileHeader.Typf);
+	{$ENDIF}
+
+	if (img^.bmiFileHeader.Typf <> $4D42) then
+	begin
+		writeln('unsupported file type');
+		exit;
+	end;
+
+	width := img^.bmiInfoHeader.Width;
+	height := img^.bmiInfoHeader.Height;
+	bpp := img^.bmiInfoHeader.bitsPerPixel;
+
+	{$IFDEF DBGOUT}
+	writeln('PutImage Width =',Width);
+	writeln('PutImage Height =',Height);
+	writeln('PutImage Planes =',img^.bmiInfoHeader.Planes);
+	writeln('PutImage BPP =',bpp);
+	{$ENDIF}
+
+	rowSize := ((bpp * width + 31) div 32) * 4;
+
+	pixels := bitmap;
+	pixels := pixels + img^.bmiFileHeader.OfBm;
+
+
+	transColor := GetRGBColor(
+				pixels[((height - 1) * rowSize) + 2],
+				pixels[((height - 1) * rowSize) + 1],
+				pixels[((height - 1) * rowSize) + 0]
+				);
+
+	for row := 0 to height-1 do
+	begin
+		for col := 0 to width-1 do
+		begin
+			color := GetRGBColor(
+				pixels[(row * rowSize) + (col * 3) + 2],
+				pixels[(row * rowSize) + (col * 3) + 1],
+				pixels[(row * rowSize) + (col * 3) + 0]
+				);
+
+			if (color <> transColor) then
+			begin
+				PutPixel(x+col, y+height-row, color);
+			end;
+		end;		
+	end;
+end;
+
+
+//
 // Other
 //
 
@@ -2562,6 +3208,11 @@ begin
 	MoveTo(x,y);
 
 	OutText(textstring);
+end;
+
+procedure SetTextStyle(font,direction,charsize:word);
+begin
+	//TODO: make customizable
 end;
 
 

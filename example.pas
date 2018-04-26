@@ -4,6 +4,7 @@ uses
 	osxbgi;
 	//wingraph, wincrt;
 
+
 //
 // TESTING app
 //
@@ -62,6 +63,9 @@ begin
 	Rectangle(-1,300,99,479);	
 end;
 
+var
+	img1,img2: pointer;
+
 begin 
 	gd := nopalette;
 	gm := m640x480;
@@ -73,28 +77,28 @@ begin
 		exit;
 	end;
 
-	//writeln('GLFW_KEY_UP=',GLFW_KEY_UP);
+	LoadImage(img1, 'dog.bmp');
+	LoadImage(img2, 'cat.bmp');
 
-	//ReadKeyTest();
-	//exit;
-	readkey();
 	UpdateGraph(UpdateOff);
-	//UpdateGraph(UpdateOn);
+ 
+ 	SetFillStyle(SolidFill, olive);
+ 	bar(150, 150, 250, 250);
+
+	PutImage(100,100, img1);
+	PutImageTransparent(100,200, img1);
+
+	PutImage(200,100, img2);
+	PutImageTransparent(200,200, img2);
+
+	UpdateGraph(UpdateNow);
+	readkey;
 
 	SetBkColor(red);
 	ClearDevice();	
 
 	SetBkColor(darkred);
 	ClearDevice();	
-
-	TestText();
-
-	UpdateGraph(UpdateNow);
-	readkey;
-	exit;
-
-
-
 
 	line(10,10,20,20);
 	LineTo(0,50);
@@ -139,6 +143,7 @@ begin
 	SetFillStyle(EmptyFill, yellow);
 	SetBkColor(lightgray);
 	bar(520, 140, 610, 160);
+	UpdateGraph(UpdateNow);
 	readkey;
 
 	
@@ -198,6 +203,7 @@ begin
 	inc(polyPoints[5].x, 50);
 	DrawPoly(5, polyPoints);
 
+	UpdateGraph(UpdateNow);
 	readkey;
 
 	(*
@@ -235,6 +241,11 @@ begin
 	writeln('get rgb check (50,100,150) ', r:6, g:6, b:6);
 
 	readkey;
+
+	TestText();
+	UpdateGraph(UpdateNow);
+	readkey;
+
 	writeln('REadkey test. Press Shift+R to exit');
 	key := readkey();
 	while key <> 'R' do
@@ -242,6 +253,7 @@ begin
 		writeln(ord(key),' *',key,'*');
 		key := readkey();
 	end;
+
 
 
 	CloseGraph();
